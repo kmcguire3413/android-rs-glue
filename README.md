@@ -40,7 +40,7 @@ cd apk-builder/apk-builder
 cargo build
 ```
 
-Finally, add a file named [`.cargo/config`](http://crates.io/config.html) in your main repository in order to ask rustc to use `apk-builder`:
+Finally, add a file named [`.cargo/config`](http://crates.io/config.html) in your main repository in order to ask rustc to use `apk-builder`, _(You may need to specify `debug` in `linker = "apk-builder/apk-builder/target/debug/apk-builder"`)_:
 
 ```toml
 [target.arm-linux-androideabi]

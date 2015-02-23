@@ -65,7 +65,7 @@ fn main() {
     // calling gcc to link to a shared object
     if Command::new(&toolgccpath.clone())
         .args(passthrough.as_slice())
-        .arg(directory.path().join("android_native_app_glue.o"))
+        //.arg(directory.path().join("android_native_app_glue.o"))
         .arg("-o").arg(directory.path().join("libs").join("armeabi").join("libmain.so"))
         .arg("-shared")
         .arg("-Wl,-E")
@@ -204,6 +204,7 @@ fn find_native_libs(args: &Args) -> HashMap<String, PathBuf> {
             Ok(())
         }).ok();
     }
+
     native_shared_libs
 }
 

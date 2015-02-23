@@ -52,6 +52,8 @@ pub const APP_CMD_SAVE_STATE: libc::int32_t = 12;
 pub const APP_CMD_PAUSE: libc::int32_t = 13;
 pub const APP_CMD_STOP: libc::int32_t = 14;
 pub const APP_CMD_DESTROY: libc::int32_t = 15;
+/// Used just to wake the looper thread from blocking.
+pub const APP_CMD_NULL: libc::int32_t = 16;
 
 extern {
     pub fn app_dummy();
