@@ -3,6 +3,7 @@ use std::cell::RefCell;
 use std::sync::{Arc, Mutex};
 use std::mem::{transmute, transmute_copy};
 use std::collections::HashMap;
+use std::marker::Reflect;
 use super::ffi;
 
 use libc;
@@ -82,6 +83,8 @@ pub struct LooperCallbackData<T> {
     /// The data passed in when registering the callback.
     pub data:   T,
 }
+
+impl<T> Reflect for LooperCallbackData<T> { }
 
 /// Represents a `LooperPollResult::Ready` state.
 pub struct LooperPollEvent {

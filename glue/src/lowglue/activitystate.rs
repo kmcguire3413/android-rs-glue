@@ -97,8 +97,8 @@ impl<T: Send> MutexWait<T> {
     pub fn wait<'a>(&self, guard: MutexGuard<'a, T>) -> LockResult<MutexGuard<'a, T>> {
         self.cond.wait(guard)
     }
-    pub fn wait_timeout<'a>(&self, guard: MutexGuard<'a, T>, dur: Duration) -> LockResult<(MutexGuard<'a, T>, bool)> {
-        self.cond.wait_timeout(guard, dur)
+    pub fn wait_timeout<'a>(&self, guard: MutexGuard<'a, T>, ms: u32) -> LockResult<(MutexGuard<'a, T>, bool)> {
+        self.cond.wait_timeout_ms(guard, ms)
     }
     pub fn notify_all(&self) {
         self.cond.notify_all();

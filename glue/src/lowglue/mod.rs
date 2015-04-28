@@ -11,6 +11,7 @@ use std::mem::{transmute, zeroed, forget};
 use std::sync::Mutex;
 use std::sync::atomic::{AtomicIsize, AtomicBool, Ordering, AtomicPtr};
 use std::time::Duration;
+use std::io::Write;
 
 pub use super::write_log;
 pub use super::libc;
@@ -57,7 +58,7 @@ extern "C" fn onDestroy(activity: *mut ffi::ANativeActivity) {
             if *l {
                 break;
             }
-            let result = astate.destroyed.wait_timeout(l, Duration::seconds(4)).unwrap();
+            let result = astate.destroyed.wait_timeout(l, 4000).unwrap();
             l = result.0;
             if !result.1 {
                 // Try to notify the application developer that for some
@@ -642,21 +643,23 @@ pub unsafe extern "C" fn ANativeActivity_onCreate(activity: *mut ffi::ANativeAct
 
     write_log("[system-thread] booted");
 
-    std::old_io::stdio::set_stdout(box std::old_io::LineBufferedWriter::new(ToLogWriter));
-    std::old_io::stdio::set_stderr(box std::old_io::LineBufferedWriter::new(ToLogWriter));    
+    std::io::set_print(Box::new(ToLogWriter));
+    std::io::set_panic(Box::new(ToLogWriter));
 }
 
 /// Writer that will redirect what is written to it to the logs.
 struct ToLogWriter;
 
-impl Writer for ToLogWriter {
-    fn write_all(&mut self, buf: &[u8]) -> std::old_io::IoResult<()> {
+impl Write for ToLogWriter {
+    fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
         let message = CString::new(buf).unwrap();
-        let message = message.as_ptr();
-        let tag = b"RustAndroidGlueLowLevel";
-        let tag = CString::new(tag).unwrap();
+        let tag = CString::new("RustAndroidGlueLowLevel").unwrap();
         let tag = tag.as_ptr();
-        unsafe { ffi::__android_log_write(3, tag, message) };
+        unsafe { ffi::__android_log_write(3, tag, message.as_ptr()) };
+        Ok(buf.len())
+    }
+
+    fn flush(&mut self) -> std::io::Result<()> {
         Ok(())
     }
 }
